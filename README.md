@@ -19,5 +19,5 @@ WooNFT is an innovative WooCommerce plugin designed to seamlessly bridge the gap
 ### **How It Works:**
 
 1. **Install WooNFT**: Easily integrate the plugin with your WooCommerce store.
-2. **Select Products for NFT Variant**: Choose which products you want to offer as unique NFT variants.
-3. **AI Generates Art**: Unique art for each NFT based on your product.
+2. **AI Generates Art**: Unique art for each NFT based on your product.
+3. **User gets the NFT in his email**: No need to create a wallet, everything is done seamlessly.

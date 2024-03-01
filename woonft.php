@@ -19,10 +19,12 @@ if (!defined('ABSPATH')) {
 register_activation_hook(__FILE__, 'woonft_activate');
 function woonft_activate() {
     add_option('woonft_network', 'testnet');
+    add_option('ai_key', 'XXX');
 }
 
 function register_woonft_settings() {
     register_setting('woonft-settings-group', 'woonft_network');
+    register_setting('woonft-settings-group', 'ai_key');
 }
 
 function woonft_add_settings_link($links) {
@@ -44,15 +46,18 @@ function woonft_enqueue_scripts() {
         global $post;
         $product = wc_get_product($post->ID);
         $productName = $product->get_name();
+        $productDescription = $product->get_description();
     }
 
     wp_localize_script('woonft-custom-script', 'woonft_params', array(
         'ajax_url' => admin_url('admin-ajax.php'),
         'productName' => $productName,
+        'productDescription' => $productDescription,
     ));
 
     wp_localize_script('woonft-script', 'woonft_params', array(
         'network' => get_option('woonft_network', 'testnet'),
+        'ai_key' => get_option('ai_key', 'XXX'),
     ));
 }
 
@@ -114,9 +119,45 @@ function woonft_settings_page() {
                         </span>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row">AI Key</th>
+                    <td>
+                        <span class="woonft-tooltip" data-tooltip="AI image generator api key">
+                                <input type="text" name="ai_key" value="<?php echo get_option('ai_key'); ?>">
+                        </span>
+                    </td>
+                </tr>
             </table>
             <?php submit_button(); ?>
         </form>
     </div>
+    <?php
+}
+
+
+add_action('wp_body_open', 'woonft_modal');
+function woonft_modal() {
+    ?>
+        <div class="modal fade" style="z-index:999999;" id="nftModal" tabindex="-1" role="dialog" aria-labelledby="nftModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="nftModalLabel">NFT Art</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="loader" class="spinner"></div>
+                    <p id="loadingText">Your unique, one-of-a-kind work of art is generating...</p>
+
+                        <img id="nftImage" src="" style="display:none; width: 100%;" class="flicker"/>
+                
+                </div>
+                <input type="text" id="nftEmail" value="" placeholder="your e-mail">
+                <button id="claimNftButton" style="margin-top: 20px; display: block !important;" class="btn btn-primary holo-button">Claim this NFT</button>
+                </div>
+            </div>
+        </div>
     <?php
 }

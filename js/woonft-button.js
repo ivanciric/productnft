@@ -3,8 +3,8 @@ jQuery(document).ready(function($) {
     const currentUrl = window.location.href;
     const params = new URLSearchParams(new URL(currentUrl).search);
 
-    checkUrlParams();
     insertGetNftButton();
+    checkUrlParams();
 
     $('#claimNftButton').on('click', function() {
         handleNftClaim();

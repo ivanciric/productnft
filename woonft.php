@@ -66,7 +66,13 @@ function woonft_localize_script($handle) {
         global $post;
         $product = wc_get_product($post->ID);
         $localization['productName'] = $product->get_name();
-        $localization['productDescription'] = $product->get_description();
+
+        $short_description = $product->get_short_description();
+        $words = explode(' ', $short_description);
+        if (count($words) > 15) {
+            $short_description = implode(' ', array_slice($words, 0, 15));
+        }
+        $localization['productDescription'] = $short_description;
     }
 
     wp_localize_script($handle, 'woonft_params', $localization);

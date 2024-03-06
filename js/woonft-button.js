@@ -14,6 +14,7 @@ jQuery(document).ready(function($) {
         if (params.has('transactionHashes')) {
             console.log("txhash:", params.get('transactionHashes'));
             $('#congratsModal').modal('show');
+            $('.get-nft-button').remove();
         } else {
             console.log("URL does not contain 'transactionHashes' parameter.");
         }
@@ -77,7 +78,7 @@ jQuery(document).ready(function($) {
             data: JSON.stringify({
                 imageUrl,
                 name: woonft_params.productName,
-                description: woonft_params.productDescription,
+                description: woonft_params.productName,
                 redirectUrl: currentUrl
             }),
             success: (data) => {

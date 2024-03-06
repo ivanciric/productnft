@@ -1,64 +1,99 @@
 jQuery(document).ready(function($) {
+    const woonftApiUrl = 'https://woonft-api.yoshi.tech/api/';
+    const currentUrl = window.location.href;
+    const params = new URLSearchParams(new URL(currentUrl).search);
 
-    async function getNft() {
-        $('#nftModal').modal('show');
-        $('#nftImage').hide();
-        $('#claimNftButton').hide();
-        $('#loader').show();
-        $('#loadingText').show();
+    checkUrlParams();
+    insertGetNftButton();
 
-  
-
-        let description = woonft_params.productName + ' ' + woonft_params.productDescription + '. Make it NFT art, polished and high quality.';
-        try {
-            
-            // const response = await window.imgResponse(description);
-            // const imageUrl = response.data[0].url;
-            const imageUrl = "https://www.cnet.com/a/img/resize/7589227193923c006f9a7fd904b77bc898e105ff/hub/2021/11/29/f566750f-79b6-4be9-9c32-8402f58ba0ef/richerd.png?auto=webp&width=768";
-
-            $('#nftImage').attr('src', imageUrl).show();
-            $('#claimNftButton').show();
-            $$('#loader').hide();
-            $('#loadingText').hide();
-            
-  
-        } catch (error) {
-            console.error("Error fetching NFT:", error);
-            $('#loader').hide();
-            $('#loadingText').hide();
-            
-     
-        }
-    }
-
-    $('#claimNftButton').click(function() {
-        alert("NFT claim functionality to be implemented.");
+    $('#claimNftButton').on('click', function() {
+        handleNftClaim();
     });
 
-
-    function insertGetNftButton() {
-        const addToCartButton = $('button.single_add_to_cart_button');
-
-        if (true) { // check blockchain services
-            if ($('.get-nft-button').length === 0) {
-                const getNftButton = $('<button/>', {
-                    text: 'Get free NFT!',
-                    class: 'get-nft-button holo-button button alt wp-element-button' ,
-                    style: '',
-                    click: function(e) {
-                        e.preventDefault();
-                        getNft();
-                    }
-                });
-
-                addToCartButton.after(getNftButton);
-            }
+    function checkUrlParams() {
+        if (params.has('transactionHashes')) {
+            console.log("txhash:", params.get('transactionHashes'));
+            $('#congratsModal').modal('show');
         } else {
-            $('.get-nft-button').remove();        
+            console.log("URL does not contain 'transactionHashes' parameter.");
         }
     }
 
-    insertGetNftButton();
+    async function getNft() {
+        const descriptionText = `${woonft_params.productName} ${woonft_params.productDescription}. Make it like NFT art, artistic and futuristic, not realistic. Emphasize digital futuristic look and make it abstract. No letters or fonts.`;
+
+        $('#nftModal').modal('show');
+        toggleLoader(true);
+
+        try {
+            $.ajax({
+                url: `${woonftApiUrl}get-image`,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ description: descriptionText }),
+                success: (data) => displayImage(data.imageUrl),
+                error: (error) => console.error('Error:', error)
+            });
+        } catch (error) {
+            console.error("Error fetching NFT:", error);
+            toggleLoader(false);
+        }
+    }
+
+    function displayImage(imageUrl) {
+        $('#nftImage').attr('src', imageUrl).show();
+        toggleLoader(false);
+        $('#claimNftButton').show();
+    }
+
+    function insertGetNftButton() {
+        if ($('.get-nft-button').length === 0 && $('button.single_add_to_cart_button').length) {
+            $('<button/>', {
+                text: 'Get free NFT!',
+                class: 'get-nft-button holo-button button alt wp-element-button',
+                click: (e) => {
+                    e.preventDefault();
+                    getNft();
+                }
+            }).insertAfter('button.single_add_to_cart_button');
+        }
+    }
+
+    function handleNftClaim() {
+        const imageUrl = $('#nftImage').attr('src');
+        if (!imageUrl) {
+            alert('No NFT image to load.');
+            return;
+        }
+
+        $('#nftModal').modal('hide');
+        $('#mintModal').modal('show');
+        toggleMintLoader(true);
+
+        $.ajax({
+            url: `${woonftApiUrl}mint`,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                imageUrl,
+                name: woonft_params.productName,
+                description: woonft_params.productDescription,
+                redirectUrl: currentUrl
+            }),
+            success: (data) => {
+                $('.get-nft-button').remove();
+                window.location.href = data.signUrl;
+            },
+            error: (error) => console.error('Error:', error)
+        });
+    }
+
+    function toggleLoader(show) {
+        $('#loader, #loadingText').toggle(show);
+        $('#nftImage, #claimNftButton').toggle(!show);
+    }
+
+    function toggleMintLoader(show) {
+        $('#loader-mint, #loadingTextMint').toggle(show);
+    }
 });
-
-

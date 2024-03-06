@@ -13,117 +13,83 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Include helper class.
-//require_once plugin_dir_path(__FILE__) . 'includes/class-woonft-helper.php';
+// Activation hook
+register_activation_hook(__FILE__, function () {
+    add_option('woonft_api_key', '13de9481-5c57-4393-9ac0-498c4fc95088');
+});
 
-register_activation_hook(__FILE__, 'woonft_activate');
-function woonft_activate() {
-    add_option('woonft_network', 'testnet');
-    add_option('ai_key', 'XXX');
-}
+// Register settings
+add_action('admin_init', function () {
+    register_setting('woonft-settings-group', 'woonft_api_key');
+});
 
-function register_woonft_settings() {
-    register_setting('woonft-settings-group', 'woonft_network');
-    register_setting('woonft-settings-group', 'ai_key');
-}
-
-function woonft_add_settings_link($links) {
+// Add settings link to the plugin action links
+add_filter('plugin_action_links_' . plugin_basename(__FILE__), function ($links) {
     $settings_link = '<a href="options-general.php?page=woonft-settings">' . __('Settings') . '</a>';
     array_unshift($links, $settings_link);
     return $links;
+});
+
+// Enqueue scripts and styles
+add_action('wp_enqueue_scripts', 'woonft_enqueue_assets');
+add_action('admin_enqueue_scripts', 'woonft_admin_enqueue_assets');
+
+function woonft_enqueue_assets() {
+    woonft_enqueue_scripts();
+    woonft_enqueue_styles();
 }
 
-add_filter('plugin_action_links_woonft/woonft.php', 'woonft_add_settings_link');
-
-// Enqueue JavaScript for front-end blockchain interactions.
-function woonft_enqueue_scripts() {
-    wp_enqueue_script('woonft-bootstrap', 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js', array('jquery'), null, true);
-    wp_enqueue_script('woonft-script', plugins_url('/dist/woonft.bundle.js', __FILE__), array(), '1.0.0', true);
-    wp_enqueue_script('woonft-custom-script', plugin_dir_url(__FILE__) . 'js/woonft-button.js', array('jquery'), null, true);
-
-    $productName = null;
-    if (is_product()) {
-        global $post;
-        $product = wc_get_product($post->ID);
-        $productName = $product->get_name();
-        $productDescription = $product->get_description();
-    }
-
-    wp_localize_script('woonft-custom-script', 'woonft_params', array(
-        'ajax_url' => admin_url('admin-ajax.php'),
-        'productName' => $productName,
-        'productDescription' => $productDescription,
-    ));
-
-    wp_localize_script('woonft-script', 'woonft_params', array(
-        'network' => get_option('woonft_network', 'testnet'),
-        'ai_key' => get_option('ai_key', 'XXX'),
-    ));
-}
-
-function woonft_enqueue_styles() {
-    wp_enqueue_style('woonft-bootstrap-style', 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css', array(), '4.5.2');
-    wp_enqueue_style('woonft-styles', plugin_dir_url(__FILE__) . 'css/woonft-product-styles.css');}
-
-function woonft_admin_enqueue_scripts() {
-    wp_enqueue_script('woonft-imgcheckbox-script', plugin_dir_url(__FILE__) . 'js/jquery.imgcheckbox.js', array('jquery'), null, true);
-    wp_enqueue_script('woonft-admin-script', plugin_dir_url(__FILE__) . 'js/woonft-admin.js', array('jquery'), null, true);
-}
-function woonft_enqueue_admin_styles() {
-    wp_enqueue_style('woonft-styles', plugin_dir_url(__FILE__) . 'css/woonft-styles.css');
+function woonft_admin_enqueue_assets() {
+    wp_enqueue_script('woonft-imgcheckbox-script', plugin_dir_url(__FILE__) . 'js/jquery.imgcheckbox.js', ['jquery'], null, true);
+    wp_enqueue_script('woonft-admin-script', plugin_dir_url(__FILE__) . 'js/woonft-admin.js', ['jquery'], null, true);
     wp_enqueue_style('woonft-admin-styles', plugin_dir_url(__FILE__) . 'css/woonft-admin-styles.css');
 }
 
-add_action('wp_enqueue_scripts', 'woonft_enqueue_styles');
-add_action('wp_enqueue_scripts', 'woonft_enqueue_scripts');
-add_action('admin_enqueue_scripts', 'woonft_admin_enqueue_scripts');
-add_action('admin_enqueue_scripts', 'woonft_enqueue_admin_styles');
-add_action('woocommerce_checkout_create_order_line_item', 'woonft_detect_nft_variant', 10, 4);
-
-add_action('admin_menu', 'woonft_create_menu');
-
-
-function woonft_create_menu() {
-    add_menu_page(
-        'WooNFT', // Page title
-        'WooNFT', // Menu title
-        'manage_options', // Capability
-        'woonft-settings', // Menu slug (pointing directly to the settings page)
-        'woonft_settings_page', // Function to display the settings page
-        'dashicons-cart', // Icon URL (optional)
-        6 // Position (optional)
-    );
-
-    add_action('admin_init', 'register_woonft_settings');
+function woonft_enqueue_scripts() {
+    wp_enqueue_script('woonft-bootstrap', 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js', ['jquery'], null, true);
+    wp_enqueue_script('woonft-custom-script', plugin_dir_url(__FILE__) . 'js/woonft-button.js', ['jquery'], null, true);
+    woonft_localize_script('woonft-custom-script');
 }
 
+function woonft_enqueue_styles() {
+    wp_enqueue_style('woonft-bootstrap-style', 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css', [], '4.5.2');
+    wp_enqueue_style('woonft-styles', plugin_dir_url(__FILE__) . 'css/woonft-product-styles.css');
+}
 
+function woonft_localize_script($handle) {
+    $localization = [
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'woonft_api_key' => get_option('woonft_api_key', '')
+    ];
+
+    if (is_product()) {
+        global $post;
+        $product = wc_get_product($post->ID);
+        $localization['productName'] = $product->get_name();
+        $localization['productDescription'] = $product->get_description();
+    }
+
+    wp_localize_script($handle, 'woonft_params', $localization);
+}
+
+// Add admin menu
+add_action('admin_menu', function () {
+    add_menu_page('WooNFT', 'WooNFT', 'manage_options', 'woonft-settings', 'woonft_settings_page', 'dashicons-cart', 6);
+});
 
 function woonft_settings_page() {
     ?>
     <div class="wrap">
         <h1>WooNFT Settings</h1>
-
         <form method="post" action="options.php">
             <?php settings_fields('woonft-settings-group'); ?>
             <?php do_settings_sections('woonft-settings-group'); ?>
             <table class="form-table">
                 <tr valign="top">
-                    <th scope="row">Network</th>
+                <th scope="row">Licence Key</th>
                     <td>
-                        <span class="woonft-tooltip" data-tooltip="NEAR network">
-                            <select name="woonft_network">
-                                <option value="testnet" <?php selected(get_option('woonft_network'), 'testnet'); ?>>testnet</option>    
-                                <option value="mainnet" <?php selected(get_option('woonft_network'), 'mainnet'); ?>>mainnet</option>
-                            </select>
-                        </span>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">AI Key</th>
-                    <td>
-                        <span class="woonft-tooltip" data-tooltip="AI image generator api key">
-                                <input type="text" name="ai_key" value="<?php echo get_option('ai_key'); ?>">
+                        <span class="woonft-tooltip" data-tooltip="Your plugin activation key">
+                                <input type="text" name="woonft_api_key" value="<?php echo get_option('woonft_api_key'); ?>">
                         </span>
                     </td>
                 </tr>
@@ -134,30 +100,8 @@ function woonft_settings_page() {
     <?php
 }
 
-
-add_action('wp_body_open', 'woonft_modal');
-function woonft_modal() {
-    ?>
-        <div class="modal fade" style="z-index:999999;" id="nftModal" tabindex="-1" role="dialog" aria-labelledby="nftModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="nftModalLabel">NFT Art</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div id="loader" class="spinner"></div>
-                    <p id="loadingText">Your unique, one-of-a-kind work of art is generating...</p>
-
-                        <img id="nftImage" src="" style="display:none; width: 100%;" class="flicker"/>
-                
-                </div>
-                <input type="text" id="nftEmail" value="" placeholder="your e-mail">
-                <button id="claimNftButton" style="margin-top: 20px; display: block !important;" class="btn btn-primary holo-button">Claim this NFT</button>
-                </div>
-            </div>
-        </div>
-    <?php
+// Include modals
+add_action('wp_body_open', 'woonft_modals');
+function woonft_modals() {
+    include plugin_dir_path(__FILE__) . 'templates/modals.php';
 }

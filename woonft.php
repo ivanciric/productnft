@@ -48,7 +48,6 @@ function woonft_admin_enqueue_assets() {
 function woonft_enqueue_scripts() {
     wp_enqueue_script('woonft-bootstrap', 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js', ['jquery'], null, true);
     wp_enqueue_script('woonft-custom-script', plugin_dir_url(__FILE__) . 'js/woonft-button.js', ['jquery'], null, true);
-    woonft_localize_script('woonft-custom-script');
 }
 
 function woonft_enqueue_styles() {
@@ -56,26 +55,8 @@ function woonft_enqueue_styles() {
     wp_enqueue_style('woonft-styles', plugin_dir_url(__FILE__) . 'css/woonft-product-styles.css');
 }
 
-function woonft_localize_script($handle) {
-    $localization = [
-        'ajax_url' => admin_url('admin-ajax.php'),
-        'woonft_api_key' => get_option('woonft_api_key', '')
-    ];
-
-    if (is_product()) {
-        global $post;
-        $product = wc_get_product($post->ID);
-        $localization['productName'] = $product->get_name();
-
-        $short_description = $product->get_short_description();
-        $words = explode(' ', $short_description);
-        if (count($words) > 15) {
-            $short_description = implode(' ', array_slice($words, 0, 15));
-        }
-        $localization['productDescription'] = $short_description;
-    }
-
-    wp_localize_script($handle, 'woonft_params', $localization);
+function woonft_localize_script($handle, $data =false) {
+    wp_localize_script($handle, 'woonft_params', $data);
 }
 
 // Add admin menu
@@ -105,6 +86,42 @@ function woonft_settings_page() {
     </div>
     <?php
 }
+
+add_action('woocommerce_thankyou', 'custom_woocommerce_thankyou_order_details', 10, 1);
+function custom_woocommerce_thankyou_order_details($order_id) {
+    if (!$order_id)
+        return;
+
+    // Get the order object
+    $order = wc_get_order($order_id);
+    if (!$order)
+        return;
+
+    $products = [];
+    // Loop through order items
+    foreach ($order->get_items() as $item_id => $item) {
+        // Get the product object
+        $product = $item->get_product();
+
+        $short_description = $product->get_short_description();
+        $words = explode(' ', $short_description);
+        if (count($words) > 15) {
+            $short_description = implode(' ', array_slice($words, 0, 15));
+        }
+
+        $products[] = 
+        [
+            'name' => $product->get_name(),
+            'description' => $short_description,
+        ];
+    }
+
+    add_action('wp_footer', function() use ($products) {
+        woonft_localize_script('woonft-custom-script', ['products' => $products]);
+    });
+}
+
+
 
 // Include modals
 add_action('wp_body_open', 'woonft_modals');

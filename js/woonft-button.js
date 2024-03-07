@@ -3,11 +3,13 @@ jQuery(document).ready(function($) {
     const currentUrl = window.location.href;
     const params = new URLSearchParams(new URL(currentUrl).search);
 
-    insertGetNftButton();
+    // Assuming each product listing has a distinct class or ID for targeting
+    insertGetNftButtons();
     checkUrlParams();
 
-    $('#claimNftButton').on('click', function() {
-        handleNftClaim();
+    $(document).on('click', '#claimNftButton', function() {
+        const productId = $(this).data('productId');
+        handleNftClaim(productId);
     });
 
     function checkUrlParams() {
@@ -15,13 +17,48 @@ jQuery(document).ready(function($) {
             console.log("txhash:", params.get('transactionHashes'));
             $('#congratsModal').modal('show');
             $('.get-nft-button').remove();
+            $('#nftButtonRow').remove();
         } else {
             console.log("URL does not contain 'transactionHashes' parameter.");
         }
     }
 
+    function insertGetNftButtons() {
+        if (woonft_params.products && woonft_params.products.length > 0) {
+
+            var $firstTable = $('table').first();
+            var $tfoot = $firstTable.find('tfoot');
+            if ($tfoot.length === 0) {
+                $tfoot = $('<tfoot></tfoot>').appendTo($firstTable);
+            }
+            var $newTr = $('<tr id="nftButtonRow"><td colspan="100%" id="nftButtonPlaceholder"></td></tr>');
+            $tfoot.append($newTr);
+
+            $('<button/>', {
+                text: 'Get free NFT of your items!',
+                class: 'get-nft-button holo-button button alt wp-element-button',
+                click: (e) => {
+                    e.preventDefault();
+                    // Assuming getNft function is adapted to handle product info
+                    getNft();
+                }
+            }).prependTo('#nftButtonPlaceholder');
+
+            
+        }
+    }
+    
+
     async function getNft() {
-        const descriptionText = `${woonft_params.productName} ${woonft_params.productDescription}. Make it like NFT art, artistic and futuristic, not realistic. Emphasize digital futuristic look and make it abstract. No letters or fonts.`;
+        const products = woonft_params.products;
+
+        var allProductNames = woonft_params.products.map(function(product) {
+            return product.name;
+        });
+        var productNamesString = allProductNames.join(", ");
+        console.log(productNamesString);
+
+        const descriptionText = `${productNamesString}. Make it like NFT art. Emphasize digital futuristic look and make it abstract.`;
 
         $('#nftModal').modal('show');
         toggleLoader(true);
@@ -47,19 +84,6 @@ jQuery(document).ready(function($) {
         $('#claimNftButton').show();
     }
 
-    function insertGetNftButton() {
-        if ($('.get-nft-button').length === 0 && $('button.single_add_to_cart_button').length) {
-            $('<button/>', {
-                text: 'Get free NFT!',
-                class: 'get-nft-button holo-button button alt wp-element-button',
-                click: (e) => {
-                    e.preventDefault();
-                    getNft();
-                }
-            }).insertAfter('button.single_add_to_cart_button');
-        }
-    }
-
     function handleNftClaim() {
         const imageUrl = $('#nftImage').attr('src');
         if (!imageUrl) {
@@ -77,12 +101,12 @@ jQuery(document).ready(function($) {
             contentType: 'application/json',
             data: JSON.stringify({
                 imageUrl,
-                name: woonft_params.productName,
-                description: woonft_params.productName,
+                name: "Woo NFT cArt",
+                description: "Shopping cart items as NFT art",
                 redirectUrl: currentUrl
             }),
             success: (data) => {
-                $('.get-nft-button').remove();
+                $('#nftButtonRow').remove();
                 window.location.href = data.signUrl;
             },
             error: (error) => console.error('Error:', error)
@@ -97,4 +121,6 @@ jQuery(document).ready(function($) {
     function toggleMintLoader(show) {
         $('#loader-mint, #loadingTextMint').toggle(show);
     }
+
+    console.log(woonft_params.products);
 });

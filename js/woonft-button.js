@@ -3,75 +3,55 @@ jQuery(document).ready(function($) {
     const currentUrl = window.location.href;
     const params = new URLSearchParams(new URL(currentUrl).search);
 
-    // Assuming each product listing has a distinct class or ID for targeting
     insertGetNftButtons();
     checkUrlParams();
-
-    $(document).on('click', '#claimNftButton', function() {
-        const productId = $(this).data('productId');
-        handleNftClaim(productId);
-    });
 
     function checkUrlParams() {
         if (params.has('transactionHashes')) {
             console.log("txhash:", params.get('transactionHashes'));
             $('#congratsModal').modal('show');
             $('.get-nft-button').remove();
-            $('#nftButtonRow').remove();
         } else {
             console.log("URL does not contain 'transactionHashes' parameter.");
         }
     }
 
     function insertGetNftButtons() {
-        if (woonft_params.products && woonft_params.products.length > 0) {
-
-            var $firstTable = $('table').first();
-            var $tfoot = $firstTable.find('tfoot');
-            if ($tfoot.length === 0) {
-                $tfoot = $('<tfoot></tfoot>').appendTo($firstTable);
-            }
-            var $newTr = $('<tr id="nftButtonRow"><td colspan="100%" id="nftButtonPlaceholder"></td></tr>');
-            $tfoot.append($newTr);
-
-            $('<button/>', {
-                text: 'Get free NFT of your items!',
+        // Assuming there's a way to identify each product row in the table, e.g., each has a 'product-row' class
+        $('tr.order_item').each(function(index) {
+            const product = woonft_params.products[index];
+            const button = $('<button/>', {
+                text: 'Get free NFT!',
                 class: 'get-nft-button holo-button button alt wp-element-button',
-                click: (e) => {
+                'data-product-id': index, // Assuming each product has a unique 'id'
+                click: function(e) {
                     e.preventDefault();
-                    // Assuming getNft function is adapted to handle product info
-                    getNft();
+                    getNft(index); // Pass the product ID to the getNft function
                 }
-            }).prependTo('#nftButtonPlaceholder');
+            });
 
-            
-        }
-    }
-    
-
-    async function getNft() {
-        const products = woonft_params.products;
-
-        var allProductNames = woonft_params.products.map(function(product) {
-            return product.name.split(" - ")[0];
+            // Assuming you want to add the button to the first cell in each row
+            $(this).find('td').first().append('<br/>');
+            $(this).find('td').first().append(button);
         });
-        var productNamesString = allProductNames.join(", ");
-        console.log(productNamesString);
+    }
 
-        const descriptionText = `${productNamesString}. Make it like NFT art. Emphasize digital futuristic look and make it abstract.`;
+    async function getNft(index) {
+        const product = woonft_params.products[index];
+        const productName = product.name.split(" - ")[0];
+        const descriptionText = `${productName}. Make it like NFT art. Emphasize digital futuristic look and make it abstract.`;
 
         $('#nftModal').modal('show');
         toggleLoader(true);
 
         try {
-            $.ajax({
+            const response = await $.ajax({
                 url: `${woonftApiUrl}get-image`,
                 type: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify({ description: descriptionText }),
-                success: (data) => displayImage(data.imageUrl),
-                error: (error) => console.error('Error:', error)
+                data: JSON.stringify({ description: descriptionText })
             });
+            displayImage(response.imageUrl);
         } catch (error) {
             console.error("Error fetching NFT:", error);
             toggleLoader(false);
@@ -81,36 +61,12 @@ jQuery(document).ready(function($) {
     function displayImage(imageUrl) {
         $('#nftImage').attr('src', imageUrl).show();
         toggleLoader(false);
-        $('#claimNftButton').show();
+        // Update to handle showing the claim button for a specific product if needed
     }
 
-    function handleNftClaim() {
-        const imageUrl = $('#nftImage').attr('src');
-        if (!imageUrl) {
-            alert('No NFT image to load.');
-            return;
-        }
-
-        $('#nftModal').modal('hide');
-        $('#mintModal').modal('show');
-        toggleMintLoader(true);
-
-        $.ajax({
-            url: `${woonftApiUrl}mint`,
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                imageUrl,
-                name: "Woo NFT cArt",
-                description: "Shopping cart items as NFT art",
-                redirectUrl: currentUrl
-            }),
-            success: (data) => {
-                $('#nftButtonRow').remove();
-                window.location.href = data.signUrl;
-            },
-            error: (error) => console.error('Error:', error)
-        });
+    // Update the handleNftClaim function to accept a productId if you plan to use it
+    function handleNftClaim(productId) {
+        // Adjust functionality as needed
     }
 
     function toggleLoader(show) {
@@ -121,6 +77,4 @@ jQuery(document).ready(function($) {
     function toggleMintLoader(show) {
         $('#loader-mint, #loadingTextMint').toggle(show);
     }
-
-    console.log(woonft_params.products);
 });

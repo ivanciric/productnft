@@ -6,14 +6,25 @@ jQuery(document).ready(function($) {
     insertGetNftButtons();
     checkUrlParams();
 
+    $(document).on('click', '#claimNftButton', function() {
+        handleNftClaim();
+    });
+
     function checkUrlParams() {
         if (params.has('transactionHashes')) {
             console.log("txhash:", params.get('transactionHashes'));
             $('#congratsModal').modal('show');
-            $('.get-nft-button').remove();
         } else {
             console.log("URL does not contain 'transactionHashes' parameter.");
         }
+
+        if(params.has('woonft-data-index')) {
+            const indices = params.getAll('woonft-data-index');
+            indices.forEach(index => {
+                $('.get-nft-button[data-index="' + index + '"]').remove();
+            });
+        }
+
     }
 
     function insertGetNftButtons() {
@@ -23,7 +34,7 @@ jQuery(document).ready(function($) {
             const button = $('<button/>', {
                 text: 'Get free NFT!',
                 class: 'get-nft-button holo-button button alt wp-element-button',
-                'data-product-id': index, // Assuming each product has a unique 'id'
+                'data-index': index, // Assuming each product has a unique 'id'
                 click: function(e) {
                     e.preventDefault();
                     getNft(index); // Pass the product ID to the getNft function
@@ -51,22 +62,51 @@ jQuery(document).ready(function($) {
                 contentType: 'application/json',
                 data: JSON.stringify({ description: descriptionText })
             });
-            displayImage(response.imageUrl);
+            displayImage(response.imageUrl, index);
         } catch (error) {
             console.error("Error fetching NFT:", error);
             toggleLoader(false);
         }
     }
 
-    function displayImage(imageUrl) {
+    function displayImage(imageUrl, index) {
+        $('#nftImage').data('index', index);
         $('#nftImage').attr('src', imageUrl).show();
         toggleLoader(false);
-        // Update to handle showing the claim button for a specific product if needed
+        $('#claimNftButton').show();
     }
 
-    // Update the handleNftClaim function to accept a productId if you plan to use it
-    function handleNftClaim(productId) {
-        // Adjust functionality as needed
+    function handleNftClaim() {
+        const imageUrl = $('#nftImage').attr('src');
+        const index = $('#nftImage').data('index');
+        if (!imageUrl) {
+            alert('No NFT image to load.');
+            return;
+        }
+
+        $('#nftModal').modal('hide');
+        $('#mintModal').modal('show');
+        toggleMintLoader(true);
+
+        const url = new URL(currentUrl);
+        url.searchParams.set('woonft-data-index', index);
+
+        $.ajax({
+            url: `${woonftApiUrl}mint`,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                imageUrl,
+                name: "Woo NFT Art",
+                description: woonft_params.products[index].name,
+                redirectUrl: url
+            }),
+            success: (data) => {
+                $('#nftButtonRow').remove();
+                window.location.href = data.signUrl;
+            },
+            error: (error) => console.error('Error:', error)
+        });
     }
 
     function toggleLoader(show) {

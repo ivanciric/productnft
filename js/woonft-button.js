@@ -53,7 +53,7 @@ jQuery(document).ready(function($) {
         const products = woonft_params.products;
 
         var allProductNames = woonft_params.products.map(function(product) {
-            return product.name;
+            return product.name.split(" - ")[0];
         });
         var productNamesString = allProductNames.join(", ");
         console.log(productNamesString);

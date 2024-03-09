@@ -69,8 +69,8 @@ if (!defined('ABSPATH')) {
                     <br/>
                     <span>
                         Head over to 
-                        <a href="https://woonfts.yoshi.tech" target="_blank">Woo NFTs Gallery</a> 
-                        to see it.
+                        <a class="woonft-mintbase-link-popup" href="" target="_blank">Mintbase</a> 
+                        to see and interact with it.
                     </span>
                 </p>
         </div>

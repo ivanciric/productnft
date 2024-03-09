@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WooNFT
- * Plugin URI: https://woonft.yoshi.tech/
+ * Plugin URI: https://woonft-store.yoshi.tech/?page_id=2
  * Description: Bridging the gap between digital and physical commerce through the power of blockchain. Store owners can now offer their products as unique NFT (Non-Fungible Token) variants on the NEAR protocol via Mintbase.
  * Version: 1.0.0
  * Author: Ivan Ciric
@@ -25,7 +25,7 @@ add_action('admin_init', function () {
 
 // Add settings link to the plugin action links
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), function ($links) {
-    $settings_link = '<a href="options-general.php?page=woonft-settings">' . __('Settings') . '</a>';
+    $settings_link = '<a href="admin.php?page=woonft-settings">' . __('Settings') . '</a>';
     array_unshift($links, $settings_link);
     return $links;
 });

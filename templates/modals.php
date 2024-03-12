@@ -18,11 +18,11 @@ if (!defined('ABSPATH')) {
         <div class="modal-body">
             <div id="loader" class="spinner"></div>
             <p id="loadingText" style="text-align: center;padding-top: 10px;">
-                <span style="font-weight:bold;">Please wait.</span>
+                <span style="font-weight:bold;">Please be patient</span>
                 <br/>
                 <span>Your unique, one-of-a-kind work of art is being generated...</span>
             </p>
-            <img id="nftImage" src="" style="display:none; width: 100%;" class="flicker"/>
+            <img id="nftImage" src="" style="display:none; width: 100%;" class="flicker" onload="jQuery(this).fadeIn();"/>
         </div>
         <button id="claimNftButton" style=" display: block !important;" class="btn btn-primary holo-button">!! Mint this NFT !!</button>
         </div>

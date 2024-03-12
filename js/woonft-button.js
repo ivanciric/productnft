@@ -21,9 +21,9 @@ jQuery(document).ready(function($) {
         }
 
         if(params.has('woonft-data-index')) {
-            var link = "https://testnet.wallet.mintbase.xyz/login?success_url=https%3A%2F%2Ftestnet.mintbase.xyz";
+            var link = "https://testnet.wallet.mintbase.xyz/login?success_url=https%3A%2F%2Ftestnet.mintbase.xyz%2Fcontract%2Fwoonft.mintspace2.testnet%2Fnfts%2Fall%2F0%3FonlyOwned%3Dtrue&failure_url=https%3A%2F%2Ftestnet.mintbase.xyz%2Fcontract%2Fwoonft.mintspace2.testnet%2Fnfts%2Fall%2F0%3FonlyOwned%3Dtrue";
             if (network === 'mainnet') {
-                link = "https://wallet.mintbase.xyz/login?success_url=https%3A%2F%2Fmintbase.xyz";
+                link = "https://wallet.mintbase.xyz/login?success_url=https%3A%2F%2Fmintbase.xyz%2Fcontract%2Fyoshi.mintbase1.near%2Fnfts%2Fall%2F0%3FonlyOwned%3Dtrue&failure_url=https%3A%2F%2Fmintbase.xyz%2Fcontract%2Fyoshi.mintbase1.near%2Fnfts%2Fall%2F0%3FonlyOwned%3Dtrue";
             }
             $('.woonft-mintbase-link-popup').attr('href', link);
 
@@ -89,25 +89,31 @@ jQuery(document).ready(function($) {
                 contentType: 'application/json',
                 data: JSON.stringify({ description: descriptionText })
             });
-            displayImage(response.imageUrl, index);
+            const imageDataURI = `data:image/png;base64,${response.image}`;
+            const imageUrl = response.imageUrl;
+            displayImage(imageDataURI, imageUrl, index);
         } catch (error) {
+            $('#nftModal').modal('hide');
+            alert('Connection to AI model failed due to high demand.\nPlease try again.')
             console.error("Error fetching NFT:", error);
             toggleLoader(false);
         }
     }
 
-    function displayImage(imageUrl, index) {
+    function displayImage(imageDataUri, imageUrl, index) {
         $('#nftImage').data('index', index);
-        $('#nftImage').attr('src', imageUrl).show();
+        $('#nftImage').data('url', imageUrl);
+        $('#nftImage').attr('src', imageDataUri).show();
         toggleLoader(false);
         $('#claimNftButton').show();
     }
 
     function handleNftClaim() {
-        const imageUrl = $('#nftImage').attr('src');
+        const image = $('#nftImage').attr('src');
         const index = $('#nftImage').data('index');
+        const imageUrl = $('#nftImage').data('url');
         const tokenId = $('#nftImage').data('token-id');
-        if (!imageUrl) {
+        if (!image) {
             alert('No NFT image to load.');
             return;
         }
@@ -124,7 +130,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({
-                imageUrl,
+                imageUrl: imageUrl,
                 name: "WooNFT Art",
                 description: woonft_params.products[index].name,
                 redirectUrl: url,

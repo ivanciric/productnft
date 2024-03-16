@@ -117,7 +117,10 @@ function custom_woocommerce_thankyou_order_details($order_id) {
     }
 
     add_action('wp_footer', function() use ($products) {
-        woonft_localize_script('woonft-custom-script', ['products' => $products]);
+        woonft_localize_script('woonft-custom-script', [
+            'products' => $products,
+            'api_key' => get_option('woonft_api_key'),
+        ]);
     });
 }
 

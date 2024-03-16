@@ -77,3 +77,10 @@ if (!defined('ABSPATH')) {
         </div>
     </div>
 </div>
+
+<!-- Fullscreen Loader -->
+<div id="woonftFullscreenLoader" class="d-flex justify-content-center align-items-center" style="display: none !important; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.7); z-index: 1050;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Please wait...</span>
+    </div>
+</div>

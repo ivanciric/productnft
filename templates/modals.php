@@ -1,5 +1,4 @@
 <?php
-// Ensure this file is being included by a parent file
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -51,6 +50,28 @@ if (!defined('ABSPATH')) {
     </div>
 </div>
 
+<!-- Waiting URL Modal -->
+<div class="modal fade" id="nftUrlModal" style="z-index:9999999;" tabindex="-1" role="dialog" aria-labelledby="nftUrlModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="mintModalLabel">Getting URL</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="loader-mint" class="spinner"></div>
+                <p id="loadingTextNftUrl" style="text-align: center;padding-top: 10px;">
+                    <span style="font-weight:bold;">Please wait.</span>
+                    <br/>
+                    <span>Getting your NFT url...</span>
+                </p>
+        </div>
+        </div>
+    </div>
+</div>
+
 <!-- Congrats Modal -->
 <div class="modal fade" id="congratsModal" style="z-index:99999999;" tabindex="-1" role="dialog" aria-labelledby="congratsModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
     <div class="modal-dialog" role="document">
@@ -75,12 +96,5 @@ if (!defined('ABSPATH')) {
                 </p>
         </div>
         </div>
-    </div>
-</div>
-
-<!-- Fullscreen Loader -->
-<div id="woonftFullscreenLoader" class="d-flex justify-content-center align-items-center" style="display: none !important; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.7); z-index: 1050;">
-    <div class="spinner-border text-primary" role="status">
-        <span class="sr-only">Please wait...</span>
     </div>
 </div>

@@ -14,10 +14,14 @@ if (!defined('ABSPATH')) {
 
 register_activation_hook(__FILE__, function () {
     add_option('woonft_api_key', '13de9481-5c57-4393-9ac0-498c4fc95088');
+    add_option('woonft_openai_api_key', '13de9481-5c57-4393-9ac0-498c4fc95088');
+    add_option('woonft_image_type', 'ai');
 });
 
 add_action('admin_init', function () {
     register_setting('woonft-settings-group', 'woonft_api_key');
+    register_setting('woonft-settings-group', 'woonft_openai_api_key');
+    register_setting('woonft-settings-group', 'woonft_image_type');
 });
 
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), function ($links) {
@@ -35,8 +39,10 @@ function woonft_enqueue_assets() {
 }
 
 function woonft_admin_enqueue_assets() {
+    wp_enqueue_script('woonft-bootstrap', 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js', ['jquery'], null, true);
     wp_enqueue_script('woonft-imgcheckbox-script', plugin_dir_url(__FILE__) . 'js/jquery.imgcheckbox.js', ['jquery'], null, true);
     wp_enqueue_script('woonft-admin-script', plugin_dir_url(__FILE__) . 'js/woonft-admin.js', ['jquery'], null, true);
+    wp_enqueue_style('woonft-bootstrap-style', 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css', [], '4.5.2');
     wp_enqueue_style('woonft-admin-styles', plugin_dir_url(__FILE__) . 'css/woonft-admin-styles.css');
 }
 
@@ -68,8 +74,30 @@ function woonft_settings_page() {
                 <tr valign="top">
                 <th scope="row">License Key</th>
                     <td>
-                        <span class="woonft-tooltip" data-tooltip="Your plugin activation key">
+                        <span class="woonft-tooltip" data-toggle="tooltip" title="Your plugin activation key">
                                 <input type="text" name="woonft_api_key" value="<?php echo get_option('woonft_api_key'); ?>">
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">NFT images <br/><small>(defaults to product image)</small></th>
+                    <td>
+                            <div class="custom-control custom-switch">
+                                <span class="woonft-tooltip" data-toggle="tooltip" title="Check if you want to use AI generated product images">
+                                    <input type="checkbox" class="custom-control-input" id="woonft_image_type" name="woonft_image_type" value="1" <?php checked(1, get_option('woonft_image_type'), true); ?> >
+                                    <label class="custom-control-label" for="woonft_image_type">Use AI</label>
+                                </span>
+                            </div>
+                    </td>
+                </tr>
+                <tr>
+                <th scope="row">OpenAI Api Key <br/><small>(for AI images)</small></th>
+                    <td>
+                        <span class="woonft-tooltip" data-toggle="tooltip" title="OpenAI API key">
+                                <input type="text" name="woonft_openai_api_key" id="woonft_openai_api_key" value="<?php echo get_option('woonft_openai_api_key'); ?>">
+                                <label for="woonft_openai_api_key">
+                                    <a href="https://openai.com/blog/openai-api" target="_blank">get one here</a>
+                                </label>
                         </span>
                     </td>
                 </tr>
@@ -77,6 +105,22 @@ function woonft_settings_page() {
             <?php submit_button(); ?>
         </form>
     </div>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            function toggleApiKeyRequired() {
+                var isChecked = $('#woonft_image_type').is(':checked');
+                $('#woonft_openai_api_key').attr('required', isChecked);    
+            }
+
+            toggleApiKeyRequired();
+
+            $('#woonft_image_type').change(function() {
+                toggleApiKeyRequired();
+            });
+        });
+    </script>
+    
     <?php
 }
 
@@ -122,4 +166,15 @@ function custom_woocommerce_thankyou_order_details($order_id) {
 add_action('wp_body_open', 'woonft_modals');
 function woonft_modals() {
     include plugin_dir_path(__FILE__) . 'templates/modals.php';
+}
+
+add_action('admin_footer', 'woonft_init_tooltips');
+function woonft_init_tooltips() {
+    ?>
+    <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+    <?php
 }

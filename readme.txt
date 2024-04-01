@@ -71,8 +71,8 @@ You do not need to use AI generated images, you could just use your default prod
 
 == Changelog ==
 = 1.0.0 =
-Initial version
+*Initial release
 
 == Upgrade Notice ==
 = 1.0.0 =
-Initial version
+*Initial release

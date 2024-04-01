@@ -49,6 +49,6 @@
 }
 
 .flicker {
-  animation: flickerAnimation 6s infinite;
+  animation: flickerAnimation 3s infinite;
 }
 

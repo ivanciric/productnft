@@ -8,13 +8,13 @@ jQuery(document).ready(function($) {
 
     insertGetNftButtons();
     checkUrlParams();
-    
+
     $(document).on('click', '#claimNftButton', function() {
         handleNftClaim();
     });
 
     async function checkUrlParams() {
-        if(params.has('network')) {
+        if (params.has('network')) {
             network = params.get('network');
         }
 
@@ -23,7 +23,7 @@ jQuery(document).ready(function($) {
             $('#nftUrlModal').modal('show');
             setTimeout(() => {
                 getNftUrl(params.get('reference'));
-            }, 3500);       
+            }, 3500);
         }
     }
 
@@ -33,14 +33,14 @@ jQuery(document).ready(function($) {
         window.open(url, '_blank');
         $('#congratsModal').modal('hide');
     });
-    
+
     function insertGetNftButtons() {
         $('tr.order_item').each(function(index) {
             const product = woonft_params.products[index];
             const button = $('<button/>', {
                 text: 'Claim a free NFT!',
                 class: 'get-nft-button holo-button button alt wp-element-button',
-                'data-index': index, 
+                'data-index': index,
                 click: function(e) {
                     e.preventDefault();
                     getNft(index);
@@ -88,18 +88,21 @@ jQuery(document).ready(function($) {
 
     async function getNft(index) {
         const product = woonft_params.products[index];
-        const productName = product.name.split(" - ")[0];
-        const descriptionText = `${productName}. Make it digital art. Emphasize digital futuristic look and make it abstract.`;
 
-        $('#nftModal').modal('show');
-        toggleLoader(true);
+        if (woonft_params.image_type && woonft_params.openai_api_key) {
+            const productName = product.name.split(" - ")[0];
+            const descriptionText = `${productName}. Make it digital art. Emphasize digital futuristic look and make it abstract.`;
+
+            $('#nftModal').modal('show');
+            toggleLoader(true);
             const response = await $.ajax({
                 url: `${woonftApiUrl}get-image`,
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({ description: descriptionText }),
                 headers: {
-                    'x-license-key': woonft_params.api_key
+                    'x-license-key': woonft_params.api_key,
+                    'x-openai-api-key': woonft_params.openai_api_key,
                 },
                 success: function(response) {
                     const imageDataURI = `data:image/png;base64,${response.image}`;
@@ -116,6 +119,16 @@ jQuery(document).ready(function($) {
                     }
                 }
             });
+        } else {
+            const productImage = product.image_url;
+
+            if(productImage) {
+                $('#nftModal').modal('show');
+                displayImage(productImage, productImage, index);
+            } else {
+                alert('No image available for this product.');
+            }
+        }
     }
 
     function displayImage(imageDataUri, imageUrl, index) {

@@ -13,8 +13,8 @@ if (!defined('ABSPATH')) {
 }
 
 register_activation_hook(__FILE__, function () {
-    add_option('woonft_api_key', '13de9481-5c57-4393-9ac0-498c4fc95088');
-    add_option('woonft_openai_api_key', '13de9481-5c57-4393-9ac0-498c4fc95088');
+    add_option('woonft_api_key', 'trial');
+    add_option('woonft_openai_api_key', '');
     add_option('woonft_image_type', 'ai');
 });
 
@@ -145,10 +145,14 @@ function custom_woocommerce_thankyou_order_details($order_id) {
             $short_description = implode(' ', array_slice($words, 0, 15));
         }
 
+        $image_id = $product->get_image_id();
+        $image_url = wp_get_attachment_image_url($image_id, 'woocommerce_single');
+
         $products[] = 
         [
             'name' => $product->get_name(),
             'description' => $short_description,
+            'image_url' => $image_url,
         ];
     }
     
@@ -156,6 +160,8 @@ function custom_woocommerce_thankyou_order_details($order_id) {
         'products' => $products,
         'api_key' => get_option('woonft_api_key'),
         'api_url' => 'https://woonft-api.yoshi.tech/api/',
+        'image_type' => get_option('woonft_image_type'),
+        'openai_api_key' => get_option('woonft_openai_api_key'),
     ];
 
     add_action('wp_footer', function() use ($data) {

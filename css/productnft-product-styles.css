@@ -10,10 +10,6 @@
     animation: holo-animation 3s infinite linear !important;
   }
   
-  .holo-button:hover {
-    /* transform: scale(1.05); */
-  }
-  
   @keyframes holo-animation {
     0% {
       background-position: 0% 50%;

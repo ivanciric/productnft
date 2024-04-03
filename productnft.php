@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: ProductNFT
- * Plugin URI: https://productnft-store.yoshi.tech
+ * Plugin URI: https://woonft-store.yoshi.tech
  * Description: Bridging the gap between digital and physical commerce through the power of blockchain. Store owners can now offer their products as unique NFT (Non-Fungible Token) variants on the NEAR protocol via Mintbase.
  * Version: 1.0.0
  * Author: Ivan Ciric
@@ -32,6 +32,7 @@ add_filter('plugin_action_links_' . plugin_basename(__FILE__), function ($links)
 
 
 add_action('admin_enqueue_scripts', 'productnft_admin_enqueue_assets');
+add_action('wp_enqueue_scripts', 'productnft_enqueue_assets');
 
 function productnft_enqueue_assets() {
     productnft_enqueue_scripts();
@@ -52,7 +53,8 @@ function productnft_enqueue_scripts() {
 
 function productnft_enqueue_styles() {
     wp_enqueue_style('productnft-bootstrap-style', 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css', [], '4.5.2');
-    wp_enqueue_style('productnft-styles', plugin_dir_url(__FILE__) . 'css/productnft-product-styles.css', [], '1.0.0', true);
+    
+    
 }
 
 function productnft_localize_script($handle, $data =false) {
@@ -60,7 +62,7 @@ function productnft_localize_script($handle, $data =false) {
 }
 
 add_action('admin_menu', function () {
-    add_menu_page('productnft', 'productnft', 'manage_options', 'productnft-settings', 'productnft_settings_page', 'dashicons-cart', 6);
+    add_menu_page('productnft', 'ProductNFT', 'manage_options', 'productnft-settings', 'productnft_settings_page', 'dashicons-cart', 6);
 });
 
 function productnft_settings_page() {
@@ -125,12 +127,14 @@ function productnft_settings_page() {
 }
 
 add_action('woocommerce_thankyou', 'custom_woocommerce_thankyou_order_details', 10, 1);
+
 function custom_woocommerce_thankyou_order_details($order_id) {
     if (!$order_id)
         return;
 
+    wp_enqueue_style('productnft-styles', plugin_dir_url(__FILE__) . 'css/productnft-product-styles.css', [], '1.0.0');
     wp_enqueue_script('productnft-custom-script', plugin_dir_url(__FILE__) . 'js/productnft-button.js', ['jquery'], '1.0.0', true);
-    add_action('wp_enqueue_scripts', 'productnft_enqueue_assets');
+    
     
     $order = wc_get_order($order_id);
     if (!$order)
@@ -160,7 +164,7 @@ function custom_woocommerce_thankyou_order_details($order_id) {
     $data = [
         'products' => $products,
         'api_key' => get_option('productnft_api_key'),
-        'api_url' => 'https://productnft-api.yoshi.tech/api/',
+        'api_url' => 'https://woonft-api.yoshi.tech/api/',
         'image_type' => get_option('productnft_image_type'),
         'openai_api_key' => get_option('productnft_openai_api_key'),
     ];

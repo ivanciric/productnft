@@ -1,5 +1,5 @@
 jQuery(document).ready(function($) {
-    const woonftApiUrl = woonft_params.api_url;
+    const woonftApiUrl = productnft_params.api_url;
     const currentUrl = window.location.href;
     const params = new URLSearchParams(new URL(currentUrl).search);
     var network = 'testnet';
@@ -36,10 +36,10 @@ jQuery(document).ready(function($) {
 
     function insertGetNftButtons() {
         $('tr.order_item').each(function(index) {
-            const product = woonft_params.products[index];
+            const product = productnft_params.products[index];
             const button = $('<button/>', {
                 text: 'Claim a free NFT!',
-                class: 'get-nft-button holo-button button alt wp-element-button',
+                class: 'button alt wp-element-button get-nft-button holo-button',
                 'data-index': index,
                 click: function(e) {
                     e.preventDefault();
@@ -60,7 +60,7 @@ jQuery(document).ready(function($) {
                 contentType: 'application/json',
                 data: JSON.stringify({ reference: reference }),
                 headers: {
-                    'x-license-key': woonft_params.api_key
+                    'x-license-key': productnft_params.api_key
                 }
             });
 
@@ -87,9 +87,9 @@ jQuery(document).ready(function($) {
     }
 
     async function getNft(index) {
-        const product = woonft_params.products[index];
+        const product = productnft_params.products[index];
 
-        if (woonft_params.image_type && woonft_params.openai_api_key) {
+        if (productnft_params.image_type && productnft_params.openai_api_key) {
             const productName = product.name.split(" - ")[0];
             const descriptionText = `${productName}. Make it digital art. Emphasize digital futuristic look and make it abstract.`;
 
@@ -101,8 +101,8 @@ jQuery(document).ready(function($) {
                 contentType: 'application/json',
                 data: JSON.stringify({ description: descriptionText }),
                 headers: {
-                    'x-license-key': woonft_params.api_key,
-                    'x-openai-api-key': woonft_params.openai_api_key,
+                    'x-license-key': productnft_params.api_key,
+                    'x-openai-api-key': productnft_params.openai_api_key,
                 },
                 success: function(response) {
                     const imageDataURI = `data:image/png;base64,${response.image}`;
@@ -162,11 +162,11 @@ jQuery(document).ready(function($) {
             data: JSON.stringify({
                 imageUrl: imageUrl,
                 name: "WooNFT Art",
-                description: woonft_params.products[index].name,
+                description: productnft_params.products[index].name,
                 redirectUrl: url
             }),
             headers: {
-                'x-license-key': woonft_params.api_key
+                'x-license-key': productnft_params.api_key
             },
             success: (data) => {
                 $('#nftButtonRow').remove();

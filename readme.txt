@@ -1,11 +1,11 @@
-=== WooNFT ===
+=== ProductNFT ===
 Contributors: emcode
 Donate link: https://paypal.me/yoshitech
 Tags: blockchain, NFT, mintbase, Learn Near Club, e-commerce
 Requires at least: 6.0
 Tested up to: 6.4.3
 Stable tag: 1.0.0
-Requires PHP: > 7.0
+Requires PHP: 7.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,13 +13,13 @@ Store owners can now offer products as unique NFT variants, weather product imag
 
 == Description ==
 
-WooNFT is an innovative WooCommerce plugin designed to seamlessly bridge the gap between traditional e-commerce and the burgeoning world of NFTs (Non-Fungible Tokens). By enabling merchants to offer their products as unique NFT variants, WooNFT ushers in a new era of digital asset ownership and collectibility, all powered by the efficiency and scalability of the NEAR protocol.
+ProductNFT is an innovative WooCommerce plugin designed to seamlessly bridge the gap between traditional e-commerce and the burgeoning world of NFTs (Non-Fungible Tokens). By enabling merchants to offer their products as unique NFT variants, ProductNFT ushers in a new era of digital asset ownership and collectibility, all powered by the efficiency and scalability of the NEAR protocol.
 
 ### **Key Features:**
 
 - **AI-Powered Art Generation**: Transform your products into one-of-a-kind digital masterpieces. Every item is distinct and collectible.
-- **Seamless Integration with WooCommerce**: WooNFT is built to integrate flawlessly with your existing WooCommerce store, allowing for a smooth transition to offering NFT variants of your products.
-- **NEAR Protocol Support**: Benefit from the speed, low transaction fees, and eco-friendly blockchain technology of NEAR protocol. WooNFT leverages NEAR to offer a scalable and sustainable NFT experience.
+- **Seamless Integration with WooCommerce**: ProductNFT is built to integrate flawlessly with your existing WooCommerce store, allowing for a smooth transition to offering NFT variants of your products.
+- **NEAR Protocol Support**: Benefit from the speed, low transaction fees, and eco-friendly blockchain technology of NEAR protocol. ProductNFT leverages NEAR to offer a scalable and sustainable NFT experience.
 - **Mintbase Chain Abstraction**: We simplify the blockchain experience through Mintbase, offering a layer of abstraction that lowers the barrier of entry for both merchants and buyers. No need for deep technical knowledge to start selling or collecting NFTs.
 
 ### **Benefits for Merchants:**
@@ -42,7 +42,7 @@ WooNFT is an innovative WooCommerce plugin designed to seamlessly bridge the gap
 6. And will be redirected to process the blockchain transaction. If you don't have a wallet, it will be automagically created for you. Don't worry, everything is completely free!
 7. You will be redirected back to the store and be able to click the link to go and see your NFT.
 8. You can interact with your NFT on Mintbase (auction it, transfer it,...).
-9. And see all the minted WooNFTs in one [Gallery](https://woonfts.yoshi.tech).
+9. And see all the minted ProductNFTs in one [Gallery](https://ProductNFTs.yoshi.tech).
 10. You can even share your NFT to the world from there.
 
 

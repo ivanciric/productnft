@@ -1,11 +1,12 @@
 <?php
 /**
  * Plugin Name: ProductNFT
- * Plugin URI: https://woonft-store.yoshi.tech
+ * Plugin URI: https://woonft.art
  * Description: Bridging the gap between digital and physical commerce through the power of blockchain. Store owners can now offer their products as unique NFT (Non-Fungible Token) variants on the NEAR protocol via Mintbase.
  * Version: 1.0.0
  * Author: Ivan Ciric
- * Author URI: https://yoshi.tech/
+ * Author URI: https://woonft.art/
+ * License: GPL2
  */
 
 if (!defined('ABSPATH')) {
@@ -40,19 +41,19 @@ function productnft_enqueue_assets() {
 }
 
 function productnft_admin_enqueue_assets() {
-    wp_enqueue_script('productnft-bootstrap', 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js', ['jquery'], '4.5.2', true);
+    wp_enqueue_script('productnft-bootstrap', plugin_dir_url(__FILE__) . 'js/bootstrap.bundle.min.js', ['jquery'], '4.5.2', true);
     wp_enqueue_script('productnft-imgcheckbox-script', plugin_dir_url(__FILE__) . 'js/jquery.imgcheckbox.js', ['jquery'], '0.5.2', true);
     wp_enqueue_script('productnft-admin-script', plugin_dir_url(__FILE__) . 'js/productnft-admin.js', ['jquery'], '1.0.0', true);
-    wp_enqueue_style('productnft-bootstrap-style', 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css', [], '4.5.2');
+    wp_enqueue_style('productnft-bootstrap-style', plugin_dir_url(__FILE__) . 'css/bootstrap.min.css', [], '4.5.2');
     wp_enqueue_style('productnft-admin-styles', plugin_dir_url(__FILE__) . 'css/productnft-admin-styles.css', [], '1.0.0', true);
 }
 
 function productnft_enqueue_scripts() {
-    wp_enqueue_script('productnft-bootstrap', 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js', ['jquery'], '4.5.2', true);
+    wp_enqueue_script('productnft-bootstrap', plugin_dir_url(__FILE__) . 'js/bootstrap.bundle.min.js', ['jquery'], '4.5.2', true);
 }
 
 function productnft_enqueue_styles() {
-    wp_enqueue_style('productnft-bootstrap-style', 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css', [], '4.5.2');
+    wp_enqueue_style('productnft-bootstrap-style', plugin_dir_url(__FILE__) . 'css/bootstrap.min.css', [], '4.5.2');
     
     
 }
@@ -126,9 +127,9 @@ function productnft_settings_page() {
     <?php
 }
 
-add_action('woocommerce_thankyou', 'custom_woocommerce_thankyou_order_details', 10, 1);
+add_action('woocommerce_thankyou', 'productnft_woocommerce_thankyou_order_details', 10, 1);
 
-function custom_woocommerce_thankyou_order_details($order_id) {
+function productnft_woocommerce_thankyou_order_details($order_id) {
     if (!$order_id)
         return;
 

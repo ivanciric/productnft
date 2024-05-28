@@ -15,15 +15,15 @@ if (!defined('ABSPATH')) {
             </button>
         </div>
         <div class="modal-body">
-            <div id="loader" class="spinner"></div>
+            <div id="loader" class="productnft-spinner"></div>
             <p id="loadingText" style="text-align: center;padding-top: 10px;">
                 <span style="font-weight:bold;">Please be patient</span>
                 <br/>
                 <span>Your unique, one-of-a-kind work of art is being generated...</span>
             </p>
-            <img id="nftImage" src="" style="display:none; width: 100%;" class="flicker" onload="jQuery(this).fadeIn();"/>
+            <img id="nftImage" src="" style="display:none; width: 100%;" class="productnft-flicker" onload="jQuery(this).fadeIn();"/>
         </div>
-        <button id="claimNftButton" style=" display: block !important;" class="btn btn-primary holo-button">!! Mint this NFT !!</button>
+        <button id="claimNftButton" style=" display: block !important;" class="btn btn-primary productnft-holo-button">!! Mint this NFT !!</button>
         </div>
     </div>
 </div>
@@ -39,7 +39,7 @@ if (!defined('ABSPATH')) {
             </button>
         </div>
         <div class="modal-body">
-            <div id="loader-mint" class="spinner"></div>
+            <div id="loader-mint" class="productnft-spinner"></div>
                 <p id="loadingTextMint" style="text-align: center;padding-top: 10px;">
                     <span style="font-weight:bold;">Please wait.</span>
                     <br/>
@@ -61,7 +61,7 @@ if (!defined('ABSPATH')) {
             </button>
         </div>
         <div class="modal-body">
-            <div id="loader-mint" class="spinner"></div>
+            <div id="loader-mint" class="productnft-spinner"></div>
                 <p id="loadingTextNftUrl" style="text-align: center;padding-top: 10px;">
                     <span style="font-weight:bold;">Please wait.</span>
                     <br/>

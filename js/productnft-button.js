@@ -59,9 +59,6 @@ jQuery(document).ready(function($) {
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({ reference: reference }),
-                headers: {
-                    'x-license-key': productnft_params.api_key
-                }
             });
 
             const resp = JSON.parse(response);
@@ -101,7 +98,6 @@ jQuery(document).ready(function($) {
                 contentType: 'application/json',
                 data: JSON.stringify({ description: descriptionText }),
                 headers: {
-                    'x-license-key': productnft_params.api_key,
                     'x-openai-api-key': productnft_params.openai_api_key,
                 },
                 success: function(response) {
@@ -165,9 +161,6 @@ jQuery(document).ready(function($) {
                 description: productnft_params.products[index].name,
                 redirectUrl: url
             }),
-            headers: {
-                'x-license-key': productnft_params.api_key
-            },
             success: (data) => {
                 $('#nftButtonRow').remove();
                 window.location.href = data.signUrl;
@@ -176,7 +169,7 @@ jQuery(document).ready(function($) {
                 if (jqXHR.status === 403) {
                     $('#mintModal').modal('hide');
                     $('#nftModal').modal('show');
-                    alert('Service not active.\nCheck your license key.');
+                    alert('Service not active.');
                 } else {
                     $('#mintModal').modal('hide');
                     $('#nftModal').modal('show');

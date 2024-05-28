@@ -14,13 +14,11 @@ if (!defined('ABSPATH')) {
 }
 
 register_activation_hook(__FILE__, function () {
-    add_option('productnft_api_key', 'trial');
     add_option('productnft_openai_api_key', '');
     add_option('productnft_image_type', 'ai');
 });
 
 add_action('admin_init', function () {
-    register_setting('productnft-settings-group', 'productnft_api_key');
     register_setting('productnft-settings-group', 'productnft_openai_api_key');
     register_setting('productnft-settings-group', 'productnft_image_type');
 });
@@ -41,10 +39,9 @@ function productnft_enqueue_assets() {
 }
 
 function productnft_admin_enqueue_assets() {
-    wp_enqueue_script('productnft-bootstrap', plugin_dir_url(__FILE__) . 'js/bootstrap.bundle.min.js', ['jquery'], '4.5.2', true);
-    wp_enqueue_script('productnft-imgcheckbox-script', plugin_dir_url(__FILE__) . 'js/jquery.imgcheckbox.js', ['jquery'], '0.5.2', true);
+    wp_enqueue_script('productnft-bootstrap', plugin_dir_url(__FILE__) . 'js/bootstrap.bundle.min.js', ['jquery'], '5.0.2', true);
+    wp_enqueue_style('productnft-bootstrap-style', plugin_dir_url(__FILE__) . 'css/bootstrap.min.css', [], '5.0.2');
     wp_enqueue_script('productnft-admin-script', plugin_dir_url(__FILE__) . 'js/productnft-admin.js', ['jquery'], '1.0.0', true);
-    wp_enqueue_style('productnft-bootstrap-style', plugin_dir_url(__FILE__) . 'css/bootstrap.min.css', [], '4.5.2');
     wp_enqueue_style('productnft-admin-styles', plugin_dir_url(__FILE__) . 'css/productnft-admin-styles.css', [], '1.0.0', true);
 }
 
@@ -75,20 +72,12 @@ function productnft_settings_page() {
             <?php do_settings_sections('productnft-settings-group'); ?>
             <table class="form-table">
                 <tr valign="top">
-                <th scope="row">License Key</th>
-                    <td>
-                        <span class="productnft-tooltip" data-toggle="tooltip" title="Your plugin activation key">
-                                <input type="text" name="productnft_api_key" value="<?php echo esc_html(get_option('productnft_api_key')); ?>">
-                        </span>
-                    </td>
-                </tr>
-                <tr>
                     <th scope="row">NFT images <br/><small>(defaults to product image)</small></th>
                     <td>
-                            <div class="custom-control custom-switch">
+                            <div class="productnft-custom-control productnft-custom-switch">
                                 <span class="productnft-tooltip" data-toggle="tooltip" title="Check if you want to use AI generated product images">
-                                    <input type="checkbox" class="custom-control-input" id="productnft_image_type" name="productnft_image_type" value="1" <?php checked(1, get_option('productnft_image_type'), true); ?> >
-                                    <label class="custom-control-label" for="productnft_image_type">Use AI</label>
+                                    <input type="checkbox" class="productnft-custom-control-input" id="productnft_image_type" name="productnft_image_type" value="1" <?php checked(1, get_option('productnft_image_type'), true); ?> >
+                                    <label class="productnft-custom-control-label" for="productnft_image_type">Use AI</label>
                                 </span>
                             </div>
                     </td>
